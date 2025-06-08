@@ -1,29 +1,33 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Modal,
-    Platform,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Modal,
+  Platform,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { COLORS, FONT_SIZE, SPACING } from '../constants/theme';
-import { EventType } from './Event';
+import { Event, EventType } from './Event';
 import { ThemedText } from './ThemedText';
 
 interface EventFormProps {
   visible: boolean;
   onClose: () => void;
   onSubmit: (event: {
+    id?: string;
     title: string;
     description: string;
     type: EventType;
     dueDate: Date;
+    completed: boolean;
   }) => void;
+  onDelete?: (id: string) => void;
+  event?: Event;
 }
 
-export function EventForm({ visible, onClose, onSubmit }: EventFormProps) {
+export function EventForm({ visible, onClose, onSubmit, onDelete, event }: EventFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<EventType>('job');
@@ -31,18 +35,30 @@ export function EventForm({ visible, onClose, onSubmit }: EventFormProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [pickerMode, setPickerMode] = useState<'date' | 'time'>('date');
 
-  const handleSubmit = () => {
-    if (title.trim()) {
-      onSubmit({
-        title: title.trim(),
-        description: description.trim(),
-        type,
-        dueDate,
-      });
+  useEffect(() => {
+    if (event) {
+      setTitle(event.title);
+      setDescription(event.description);
+      setType(event.type);
+      setDueDate(new Date(event.dueDate));
+    } else {
       setTitle('');
       setDescription('');
       setType('job');
       setDueDate(new Date());
+    }
+  }, [event]);
+
+  const handleSubmit = () => {
+    if (title.trim()) {
+      onSubmit({
+        id: event?.id,
+        title: title.trim(),
+        description: description.trim(),
+        type,
+        dueDate,
+        completed: event?.completed || false,
+      });
       onClose();
     }
   };
@@ -54,12 +70,10 @@ export function EventForm({ visible, onClose, onSubmit }: EventFormProps) {
     
     if (selectedDate) {
       if (Platform.OS === 'android' && pickerMode === 'date') {
-        // On Android, after selecting date, show time picker
         setDueDate(selectedDate);
         setPickerMode('time');
         setShowDatePicker(true);
       } else {
-        // For iOS or when selecting time on Android
         setDueDate(selectedDate);
         if (Platform.OS === 'android') {
           setShowDatePicker(false);
@@ -82,7 +96,9 @@ export function EventForm({ visible, onClose, onSubmit }: EventFormProps) {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <ThemedText type="title" style={styles.title}>New Event</ThemedText>
+          <ThemedText type="title" style={styles.title}>
+            {event ? 'Edit Event' : 'New Event'}
+          </ThemedText>
           
           <TextInput
             style={styles.input}
@@ -158,6 +174,19 @@ export function EventForm({ visible, onClose, onSubmit }: EventFormProps) {
           )}
 
           <View style={styles.buttonContainer}>
+            {event && onDelete && (
+              <TouchableOpacity
+                style={[styles.button, styles.deleteButton]}
+                onPress={() => {
+                  onDelete(event.id);
+                  onClose();
+                }}
+              >
+                <ThemedText style={[styles.buttonText, styles.deleteButtonText]}>
+                  Delete
+                </ThemedText>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={[styles.button, styles.cancelButton]}
               onPress={onClose}
@@ -169,7 +198,7 @@ export function EventForm({ visible, onClose, onSubmit }: EventFormProps) {
               onPress={handleSubmit}
             >
               <ThemedText style={[styles.buttonText, styles.submitButtonText]}>
-                Add Event
+                {event ? 'Save' : 'Add Event'}
               </ThemedText>
             </TouchableOpacity>
           </View>
@@ -266,11 +295,17 @@ const styles = StyleSheet.create({
   submitButton: {
     backgroundColor: COLORS.primary,
   },
+  deleteButton: {
+    backgroundColor: COLORS.error,
+  },
   buttonText: {
     textAlign: 'center',
     fontSize: FONT_SIZE.md,
   },
   submitButtonText: {
+    color: COLORS.background,
+  },
+  deleteButtonText: {
     color: COLORS.background,
   },
 }); 

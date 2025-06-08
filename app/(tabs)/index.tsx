@@ -1,36 +1,52 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { Event, EventType } from '../../components/Event';
 import { EventForm } from '../../components/EventForm';
 import { COLORS } from '../../constants/theme';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { addEvent, deleteEvent, toggleEvent } from '../../store/slices/eventSlice';
+import { addEvent, deleteEvent, toggleEvent, updateEvent } from '../../store/slices/eventSlice';
 import { homeStyles } from '../../styles/screens/home.styles';
 
 export default function HomeScreen() {
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | undefined>();
   const dispatch = useAppDispatch();
   const events = useAppSelector((state) => state.events.events);
 
   const handleAddEvent = (eventData: {
+    id?: string;
     title: string;
     description: string;
     type: EventType;
     dueDate: Date;
+    completed: boolean;
   }) => {
-    dispatch(addEvent({
-      ...eventData,
-      dueDate: eventData.dueDate.toISOString(),
-      completed: false,
-    }));
+    if (eventData.id) {
+      dispatch(updateEvent({
+        id: eventData.id,
+        title: eventData.title,
+        description: eventData.description,
+        type: eventData.type,
+        dueDate: eventData.dueDate.toISOString(),
+        completed: eventData.completed,
+      }));
+    } else {
+      dispatch(addEvent({
+        title: eventData.title,
+        description: eventData.description,
+        type: eventData.type,
+        dueDate: eventData.dueDate.toISOString(),
+        completed: false,
+      }));
+    }
   };
 
   const handleToggleEvent = (id: string) => {
@@ -41,9 +57,14 @@ export default function HomeScreen() {
     dispatch(deleteEvent(id));
   };
 
-  const handleEventPress = (id: string) => {
-    // TODO: Implement event details view
-    console.log('Event pressed:', id);
+  const handleEventPress = (event: Event) => {
+    setSelectedEvent(event);
+    setIsFormVisible(true);
+  };
+
+  const handleCloseForm = () => {
+    setIsFormVisible(false);
+    setSelectedEvent(undefined);
   };
 
   return (
@@ -62,8 +83,8 @@ export default function HomeScreen() {
         {events.map((event) => (
           <Event
             key={event.id}
-            event={{ ...event, dueDate: new Date(event.dueDate) }}
-            onPress={() => handleEventPress(event.id)}
+            event={event}
+            onPress={() => handleEventPress(event)}
             onToggle={() => handleToggleEvent(event.id)}
           />
         ))}
@@ -81,8 +102,10 @@ export default function HomeScreen() {
 
       <EventForm
         visible={isFormVisible}
-        onClose={() => setIsFormVisible(false)}
+        onClose={handleCloseForm}
         onSubmit={handleAddEvent}
+        onDelete={handleDeleteEvent}
+        event={selectedEvent}
       />
     </KeyboardAvoidingView>
   );

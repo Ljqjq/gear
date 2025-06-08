@@ -10,7 +10,7 @@ export interface Event {
   title: string;
   description: string;
   type: EventType;
-  dueDate: Date;
+  dueDate: string;
   completed: boolean;
 }
 
@@ -34,6 +34,11 @@ export function Event({ event, onPress, onToggle }: EventProps) {
     }
   };
 
+  const dueDate = new Date(event.dueDate);
+  const formattedDate = !isNaN(dueDate.getTime()) 
+    ? `${dueDate.toLocaleDateString()} ${dueDate.toLocaleTimeString()}`
+    : 'No due date';
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -48,7 +53,7 @@ export function Event({ event, onPress, onToggle }: EventProps) {
             {event.description}
           </ThemedText>
           <ThemedText style={styles.dueDate}>
-            Due: {event.dueDate.toLocaleDateString()} {event.dueDate.toLocaleTimeString()}
+            Due: {formattedDate}
           </ThemedText>
         </View>
       </TouchableOpacity>
