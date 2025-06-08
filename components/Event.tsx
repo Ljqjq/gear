@@ -35,37 +35,58 @@ export function Event({ event, onPress, onToggle }: EventProps) {
   };
 
   return (
-    <TouchableOpacity
-      style={[styles.container, { borderLeftColor: getTypeColor(event.type) }]}
-      onPress={onPress}
-    >
-      <View style={styles.content}>
-        <ThemedText type="defaultSemiBold" style={styles.title}>
-          {event.title}
-        </ThemedText>
-        <ThemedText style={styles.description} numberOfLines={2}>
-          {event.description}
-        </ThemedText>
-        <ThemedText style={styles.dueDate}>
-          Due: {event.dueDate.toLocaleDateString()} {event.dueDate.toLocaleTimeString()}
-        </ThemedText>
-      </View>
+    <View style={styles.container}>
       <TouchableOpacity
-        style={[styles.checkbox, event.completed && styles.checked]}
+        style={[styles.contentContainer, { borderLeftColor: getTypeColor(event.type) }]}
+        onPress={onPress}
+      >
+        <View style={styles.content}>
+          <ThemedText type="defaultSemiBold" style={styles.title}>
+            {event.title}
+          </ThemedText>
+          <ThemedText style={styles.description} numberOfLines={2}>
+            {event.description}
+          </ThemedText>
+          <ThemedText style={styles.dueDate}>
+            Due: {event.dueDate.toLocaleDateString()} {event.dueDate.toLocaleTimeString()}
+          </ThemedText>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.completionArea, { borderColor: getTypeColor(event.type) }]}
         onPress={onToggle}
-      />
-    </TouchableOpacity>
+      >
+        {event.completed && (
+          <View style={[styles.completedFill, { backgroundColor: getTypeColor(event.type) }]} />
+        )}
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: COLORS.card,
-    padding: SPACING.md,
     borderRadius: 8,
     marginVertical: SPACING.xs,
+    overflow: 'hidden',
+  },
+  completionArea: {
+    width: '20%',
+    borderLeftWidth: 2,
+    position: 'relative',
+  },
+  completedFill: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  contentContainer: {
+    flex: 1,
+    padding: SPACING.md,
     borderLeftWidth: 4,
   },
   content: {
@@ -83,16 +104,5 @@ const styles = StyleSheet.create({
   dueDate: {
     fontSize: FONT_SIZE.xs,
     color: COLORS.text.secondary,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: COLORS.primary,
-    marginLeft: SPACING.sm,
-  },
-  checked: {
-    backgroundColor: COLORS.primary,
   },
 }); 
