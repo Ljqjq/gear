@@ -1,5 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Event } from '../../components/Event';
+import { EventType } from '../../components/Event';
+
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  type: EventType;
+  dueDate: string; // Store as ISO string
+  completed: boolean;
+}
 
 interface EventState {
   events: Event[];
