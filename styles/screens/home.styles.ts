@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, FONT_SIZE, SHADOWS, SPACING } from '../../constants/theme';
+import { COLORS } from '../../constants/theme';
 
 export const homeStyles = StyleSheet.create({
   container: {
@@ -7,45 +7,79 @@ export const homeStyles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   header: {
-    padding: SPACING.lg,
-    paddingTop: SPACING.xl,
+    padding: 16,
+    paddingTop: 60,
   },
-  title: {
-    fontSize: FONT_SIZE.xxl,
-    color: COLORS.text.primary,
+  dateNavigation: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  dateText: {
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: SPACING.xs,
+    color: COLORS.text.primary,
+    marginHorizontal: 16,
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  filterButton: {
+    flex: 1,
+    padding: 8,
+    marginHorizontal: 4,
+    borderRadius: 8,
+    backgroundColor: COLORS.background,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+  },
+  filterButtonActive: {
+    backgroundColor: COLORS.primary,
+  },
+  filterButtonText: {
+    textAlign: 'center',
+    color: COLORS.primary,
+    fontWeight: '500',
+  },
+  filterButtonTextActive: {
+    color: COLORS.background,
   },
   subtitle: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: 16,
     color: COLORS.text.secondary,
+    marginBottom: 16,
   },
   todoList: {
     flex: 1,
-    paddingHorizontal: SPACING.md,
+    padding: 16,
   },
   inputContainer: {
     flexDirection: 'row',
-    padding: SPACING.md,
-    backgroundColor: COLORS.surface,
-    ...SHADOWS.medium,
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.divider,
+    backgroundColor: COLORS.background,
   },
   input: {
     flex: 1,
-    height: 48,
-    backgroundColor: COLORS.card,
-    borderRadius: 24,
-    paddingHorizontal: SPACING.lg,
+    height: 40,
+    borderWidth: 1,
+    borderColor: COLORS.divider,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginRight: 8,
     color: COLORS.text.primary,
-    fontSize: FONT_SIZE.md,
-    marginRight: SPACING.sm,
   },
   addButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.card,
-    justifyContent: 'center',
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
   },
 }); 
