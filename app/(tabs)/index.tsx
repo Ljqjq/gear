@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  Animated,
   KeyboardAvoidingView,
+  PanResponder,
   Platform,
   ScrollView,
   Text,
@@ -24,6 +26,62 @@ export default function HomeScreen() {
   const [selectedTypes, setSelectedTypes] = useState<EventType[]>(['job', 'routine', 'free-time']);
   const dispatch = useAppDispatch();
   const events = useAppSelector((state) => state.events.events);
+  const pan = useRef(new Animated.ValueXY()).current;
+  const currentDate = useRef(selectedDate);
+  const [displayDate, setDisplayDate] = useState(selectedDate);
+  const hasDateChanged = useRef(false);
+
+  useEffect(() => {
+    currentDate.current = selectedDate;
+    setDisplayDate(selectedDate);
+    hasDateChanged.current = false;
+  }, [selectedDate]);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (_, gesture) => {
+        // Limit the swipe to one day's worth of movement
+        const maxSwipeDistance = 300; // Maximum swipe distance
+        const clampedDx = Math.max(Math.min(gesture.dx, maxSwipeDistance), -maxSwipeDistance);
+        pan.x.setValue(clampedDx);
+        
+        // Calculate the date based on swipe progress
+        const swipeThreshold = 250; // pixels per day
+        const progress = clampedDx / swipeThreshold;
+        
+        // Create a new date object for each calculation to avoid mutation
+        const newDate = new Date(currentDate.current);
+        const daysToAdd = Math.round(progress);
+        newDate.setDate(newDate.getDate() - daysToAdd);
+        
+        // Check if the date has actually changed
+        if (newDate.getDate() !== displayDate.getDate()) {
+          hasDateChanged.current = true;
+          setDisplayDate(newDate);
+        }
+      },
+      onPanResponderRelease: (_, gesture) => {
+        const swipeThreshold = 249; // Minimum distance to trigger a swipe
+        
+        if (Math.abs(gesture.dx) > swipeThreshold || hasDateChanged.current) {
+          // Create a new date object for each calculation
+          const newDate = new Date(currentDate.current);
+          const daysToAdd = gesture.dx > 0 ? -1 : 1;
+          newDate.setDate(newDate.getDate() + daysToAdd);
+          setSelectedDate(newDate);
+        }
+
+        // Reset the pan value with animation
+        Animated.spring(pan, {
+          toValue: { x: 0, y: 0 },
+          useNativeDriver: false,
+          friction: 5,
+          tension: 40,
+        }).start();
+      },
+    })
+  ).current;
 
   const handleAddEvent = (eventData: {
     id?: string;
@@ -94,10 +152,14 @@ export default function HomeScreen() {
 
   const filteredEvents = events.filter(event => {
     const eventDate = new Date(event.dueDate);
-    const isSameDay = eventDate.toDateString() === selectedDate.toDateString();
+    const isSameDay = eventDate.toDateString() === displayDate.toDateString();
     const isSelectedType = selectedTypes.includes(event.type);
     return isSameDay && isSelectedType;
   });
+
+  const animatedStyle = {
+    transform: [{ translateX: pan.x }],
+  };
 
   return (
     <KeyboardAvoidingView
@@ -111,7 +173,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setShowDatePicker(true)}>
             <Text style={homeStyles.dateText}>
-              {selectedDate.toLocaleDateString()}
+              {displayDate.toLocaleDateString()}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigateDate(1)}>
@@ -144,16 +206,21 @@ export default function HomeScreen() {
         </Text>
       </View>
 
-      <ScrollView style={homeStyles.todoList}>
-        {filteredEvents.map((event) => (
-          <Event
-            key={event.id}
-            event={event}
-            onPress={() => handleEventPress(event)}
-            onToggle={() => handleToggleEvent(event.id)}
-          />
-        ))}
-      </ScrollView>
+      <Animated.View 
+        style={[{ flex: 1 }, animatedStyle]} 
+        {...panResponder.panHandlers}
+      >
+        <ScrollView style={homeStyles.todoList}>
+          {filteredEvents.map((event) => (
+            <Event
+              key={event.id}
+              event={event}
+              onPress={() => handleEventPress(event)}
+              onToggle={() => handleToggleEvent(event.id)}
+            />
+          ))}
+        </ScrollView>
+      </Animated.View>
 
       <View style={homeStyles.inputContainer}>
         <TouchableOpacity
