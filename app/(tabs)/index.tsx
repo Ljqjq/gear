@@ -11,43 +11,31 @@ import {
 } from 'react-native';
 import { TodoItem } from '../../components/TodoItem';
 import { COLORS } from '../../constants/theme';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { addTodo, deleteTodo, toggleTodo } from '../../store/slices/todoSlice';
 import { homeStyles } from '../../styles/screens/home.styles';
 
-interface Todo {
-  id: string;
-  title: string;
-  completed: boolean;
-  dueDate?: Date;
-}
-
 export default function HomeScreen() {
-  const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState('');
+  const dispatch = useAppDispatch();
+  const todos = useAppSelector((state) => state.todos.todos);
 
-  const addTodo = () => {
+  const handleAddTodo = () => {
     if (newTodo.trim()) {
-      setTodos([
-        ...todos,
-        {
-          id: Date.now().toString(),
-          title: newTodo.trim(),
-          completed: false,
-        },
-      ]);
+      dispatch(addTodo({
+        title: newTodo.trim(),
+        completed: false,
+      }));
       setNewTodo('');
     }
   };
 
-  const toggleTodo = (id: string) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+  const handleToggleTodo = (id: string) => {
+    dispatch(toggleTodo(id));
   };
 
-  const deleteTodo = (id: string) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+  const handleDeleteTodo = (id: string) => {
+    dispatch(deleteTodo(id));
   };
 
   return (
@@ -69,8 +57,8 @@ export default function HomeScreen() {
             title={todo.title}
             completed={todo.completed}
             dueDate={todo.dueDate}
-            onToggle={() => toggleTodo(todo.id)}
-            onDelete={() => deleteTodo(todo.id)}
+            onToggle={() => handleToggleTodo(todo.id)}
+            onDelete={() => handleDeleteTodo(todo.id)}
           />
         ))}
       </ScrollView>
@@ -82,9 +70,9 @@ export default function HomeScreen() {
           placeholderTextColor={COLORS.text.secondary}
           value={newTodo}
           onChangeText={setNewTodo}
-          onSubmitEditing={addTodo}
+          onSubmitEditing={handleAddTodo}
         />
-        <TouchableOpacity style={homeStyles.addButton} onPress={addTodo}>
+        <TouchableOpacity style={homeStyles.addButton} onPress={handleAddTodo}>
           <Ionicons name="add" size={24} color={COLORS.primary} />
         </TouchableOpacity>
       </View>
