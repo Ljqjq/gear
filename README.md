@@ -1,50 +1,104 @@
-# Welcome to your Expo app 👋
+# Gear - React Native Application
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Git Workflow
 
-## Get started
+### Branching Strategy
+We follow a simplified Git Flow approach:
 
-1. Install dependencies
+- `main` - Production branch
+- `develop` - Development branch
+- `feature/*` - Feature branches
+- `bugfix/*` - Bug fix branches
+- `release/*` - Release preparation branches
+- `hotfix/*` - Hot fix branches
 
+### Branch Naming Conventions
+- Feature branches: `feature/feature-name`
+- Bug fix branches: `bugfix/bug-description`
+- Release branches: `release/v1.x.x`
+- Hot fix branches: `hotfix/issue-description`
+
+### Commit Message Convention
+We follow the Conventional Commits specification:
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+Types:
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `test`: Adding or modifying tests
+- `chore`: Maintenance tasks
+
+Example:
+```
+feat(auth): add login functionality
+fix(api): resolve user data fetching issue
+docs(readme): update installation instructions
+```
+
+## Project Structure
+```
+src/
+├── features/           # Feature-based modules
+├── shared/            # Shared components and utilities
+├── core/              # Core business logic
+├── infrastructure/    # External services integration
+└── config/           # Configuration files
+```
+
+## Development Workflow
+
+1. Create a new branch from `develop`
+2. Make your changes
+3. Write meaningful commit messages
+4. Push your branch
+5. Create a Pull Request
+6. Code review
+7. Merge to `develop`
+8. After testing, merge to `main` for release
+
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies:
    ```bash
    npm install
    ```
-
-2. Start the app
-
+3. Start the development server:
    ```bash
-   npx expo start
+   npm start
    ```
 
-In the output, you'll find options to open the app in a
+## Available Scripts
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- `npm start` - Start the development server
+- `npm run android` - Run on Android
+- `npm run ios` - Run on iOS
+- `npm run web` - Run on web
+- `npm run lint` - Run ESLint
+- `npm run reset-project` - Reset project configuration
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Dependencies
 
-## Get a fresh project
+See `package.json` for a complete list of dependencies.
 
-When you're ready, run:
+## Contributing
 
-```bash
-npm run reset-project
-```
+1. Follow the Git workflow
+2. Write meaningful commit messages
+3. Create descriptive Pull Requests
+4. Ensure all tests pass
+5. Update documentation as needed
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## License
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+[Your License Here]
