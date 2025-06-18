@@ -1,15 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Animated,
-  KeyboardAvoidingView,
-  PanResponder,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View
+    Animated,
+    KeyboardAvoidingView,
+    PanResponder,
+    Platform,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import { Event, EventType } from '../../components/Event';
 import { EventForm } from '../../components/EventForm';
@@ -241,12 +240,38 @@ export default function HomeScreen() {
       />
 
       {showDatePicker && (
-        <DateTimePicker
-          value={selectedDate}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
+        <View style={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          bottom: 0, 
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          <View style={{ 
+            backgroundColor: 'white', 
+            padding: 20, 
+            borderRadius: 10,
+            minWidth: 300
+          }}>
+            <Text style={{ fontSize: 18, marginBottom: 20, textAlign: 'center' }}>
+              Date picker not available in Expo Go
+            </Text>
+            <TouchableOpacity 
+              onPress={() => setShowDatePicker(false)}
+              style={{ 
+                backgroundColor: '#007AFF', 
+                padding: 10, 
+                borderRadius: 5,
+                alignItems: 'center'
+              }}
+            >
+              <Text style={{ color: 'white' }}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       )}
     </KeyboardAvoidingView>
   );

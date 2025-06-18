@@ -1,12 +1,10 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
 import {
-  Modal,
-  Platform,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Modal,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import { COLORS, FONT_SIZE, SPACING } from '../constants/theme';
 import { Event, EventType } from './Event';
@@ -32,8 +30,6 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
   const [description, setDescription] = useState('');
   const [type, setType] = useState<EventType>('job');
   const [dueDate, setDueDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [pickerMode, setPickerMode] = useState<'date' | 'time'>('date');
 
   useEffect(() => {
     if (event) {
@@ -61,30 +57,6 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
       });
       onClose();
     }
-  };
-
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    if (Platform.OS === 'android') {
-      setShowDatePicker(false);
-    }
-    
-    if (selectedDate) {
-      if (Platform.OS === 'android' && pickerMode === 'date') {
-        setDueDate(selectedDate);
-        setPickerMode('time');
-        setShowDatePicker(true);
-      } else {
-        setDueDate(selectedDate);
-        if (Platform.OS === 'android') {
-          setShowDatePicker(false);
-        }
-      }
-    }
-  };
-
-  const showPicker = (mode: 'date' | 'time') => {
-    setPickerMode(mode);
-    setShowDatePicker(true);
   };
 
   return (
@@ -144,34 +116,36 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
           </View>
 
           <View style={styles.dateContainer}>
-            <TouchableOpacity
-              style={styles.dateButton}
-              onPress={() => showPicker('date')}
-            >
-              <ThemedText>
-                Date: {dueDate.toLocaleDateString()}
-              </ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.dateButton}
-              onPress={() => showPicker('time')}
-            >
-              <ThemedText>
-                Time: {dueDate.toLocaleTimeString()}
-              </ThemedText>
-            </TouchableOpacity>
-          </View>
-
-          {showDatePicker && (
-            <DateTimePicker
-              value={dueDate}
-              mode={pickerMode}
-              is24Hour={true}
-              onChange={handleDateChange}
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            <TextInput
+              style={styles.input}
+              placeholder="Date (MM/DD/YYYY)"
+              placeholderTextColor={COLORS.text.secondary}
+              value={dueDate.toLocaleDateString()}
+              onChangeText={(text) => {
+                // Simple date parsing - you can improve this later
+                const date = new Date(text);
+                if (!isNaN(date.getTime())) {
+                  setDueDate(date);
+                }
+              }}
             />
-          )}
+
+            <TextInput
+              style={styles.input}
+              placeholder="Time (HH:MM)"
+              placeholderTextColor={COLORS.text.secondary}
+              value={dueDate.toLocaleTimeString()}
+              onChangeText={(text) => {
+                // Simple time parsing - you can improve this later
+                const [hours, minutes] = text.split(':').map(Number);
+                if (!isNaN(hours) && !isNaN(minutes)) {
+                  const newDate = new Date(dueDate);
+                  newDate.setHours(hours, minutes);
+                  setDueDate(newDate);
+                }
+              }}
+            />
+          </View>
 
           <View style={styles.buttonContainer}>
             {event && onDelete && (
@@ -271,13 +245,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: SPACING.lg,
-  },
-  dateButton: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-    padding: SPACING.md,
-    borderRadius: 8,
-    marginHorizontal: SPACING.xs,
   },
   buttonContainer: {
     flexDirection: 'row',
