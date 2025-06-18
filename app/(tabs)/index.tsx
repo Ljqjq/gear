@@ -10,12 +10,11 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import { Event, EventType } from '../../components/Event';
-import { EventForm } from '../../components/EventForm';
-import { COLORS } from '../../constants/theme';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { addEvent, deleteEvent, toggleEvent, updateEvent } from '../../store/slices/eventSlice';
-import { homeStyles } from '../../styles/screens/home.styles';
+import { EventComponent as Event, EventForm, EventType } from '../../src/features/events';
+import { COLORS } from '../../src/shared/constants/theme';
+import { useAppDispatch, useAppSelector } from '../../src/store/hooks';
+import { addEvent, deleteEvent, toggleEvent, updateEvent } from '../../src/store/slices/eventSlice';
+import { homeStyles } from '../../src/styles/screens/home.styles';
 
 export default function HomeScreen() {
   const [isFormVisible, setIsFormVisible] = useState(false);

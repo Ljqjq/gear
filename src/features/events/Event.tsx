@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { COLORS, FONT_SIZE, SPACING } from '../constants/theme';
-import { ThemedText } from './ThemedText';
+import { ThemedText } from '../../shared/components/ThemedText';
+import { COLORS, FONT_SIZE, SPACING } from '../../shared/constants/theme';
 
 export type EventType = 'job' | 'routine' | 'free-time';
 

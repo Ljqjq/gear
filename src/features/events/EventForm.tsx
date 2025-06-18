@@ -6,9 +6,9 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import { COLORS, FONT_SIZE, SPACING } from '../constants/theme';
+import { ThemedText } from '../../shared/components/ThemedText';
+import { COLORS, FONT_SIZE, SPACING } from '../../shared/constants/theme';
 import { Event, EventType } from './Event';
-import { ThemedText } from './ThemedText';
 
 interface EventFormProps {
   visible: boolean;

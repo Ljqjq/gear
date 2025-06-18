@@ -1,5 +1,5 @@
 import * as Notifications from 'expo-notifications';
-import { Event } from '../components/Event';
+import { Event } from '../features/events/Event';
 
 // Configure how notifications appear when the app is in the foreground
 Notifications.setNotificationHandler({
