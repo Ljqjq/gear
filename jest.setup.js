@@ -1,39 +1,29 @@
-import '@testing-library/jest-native/extend-expect';
-
-// Basic mocks
-jest.mock('expo-router', () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    back: jest.fn(),
-  }),
-  useLocalSearchParams: () => ({}),
-  Link: 'Link',
-}));
-
-// Mock expo-notifications
-jest.mock('expo-notifications', () => ({
-  getPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
-  requestPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
-  setNotificationHandler: jest.fn(),
-}));
-
-// Mock expo-constants
-jest.mock('expo-constants', () => ({
-  expoConfig: {
-    extra: {
-      apiUrl: 'http://localhost:3000',
-    },
-  },
-}));
-
-// Global test setup
+// Basic Jest setup without Expo dependencies
 global.console = {
   ...console,
-  // Uncomment to ignore a specific log level
+  // Uncomment to ignore specific log levels during tests
   // log: jest.fn(),
   // debug: jest.fn(),
   // info: jest.fn(),
   // warn: jest.fn(),
   // error: jest.fn(),
-}; 
+};
+
+// Mock React Native modules
+jest.mock('react-native', () => ({
+  StyleSheet: {
+    create: jest.fn((styles) => styles),
+  },
+  TouchableOpacity: 'TouchableOpacity',
+  View: 'View',
+  Text: 'Text',
+  ScrollView: 'ScrollView',
+  TextInput: 'TextInput',
+  Alert: {
+    alert: jest.fn(),
+  },
+  Platform: {
+    OS: 'ios',
+    select: jest.fn((obj) => obj.ios),
+  },
+})); 
