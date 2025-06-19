@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, FONT_SIZE, SPACING } from '../../shared/constants/theme';
+import { COLORS, FONT_SIZE, SHADOWS, SPACING } from '../../shared/constants/theme';
 
 export const todoItemStyles = StyleSheet.create({
   container: {

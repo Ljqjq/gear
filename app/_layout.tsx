@@ -6,9 +6,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { Provider } from 'react-redux';
-import { store } from '../store';
+import { store } from '../src/store';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useColorScheme } from '../src/shared/hooks/useColorScheme';
 
 // Configure notifications
 Notifications.setNotificationHandler({
