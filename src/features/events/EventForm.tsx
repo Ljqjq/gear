@@ -1,3 +1,4 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
 import {
     Modal,
@@ -30,6 +31,8 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
   const [description, setDescription] = useState('');
   const [type, setType] = useState<EventType>('job');
   const [dueDate, setDueDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   useEffect(() => {
     if (event) {
@@ -116,35 +119,52 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
           </View>
 
           <View style={styles.dateContainer}>
-            <TextInput
+            <TouchableOpacity
               style={styles.input}
-              placeholder="Date (MM/DD/YYYY)"
-              placeholderTextColor={COLORS.text.secondary}
-              value={dueDate.toLocaleDateString()}
-              onChangeText={(text) => {
-                // Simple date parsing - you can improve this later
-                const date = new Date(text);
-                if (!isNaN(date.getTime())) {
-                  setDueDate(date);
-                }
-              }}
-            />
-
-            <TextInput
+              onPress={() => setShowDatePicker(true)}
+            >
+              <ThemedText>
+                {dueDate ? dueDate.toLocaleDateString() : 'Select Date'}
+              </ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
               style={styles.input}
-              placeholder="Time (HH:MM)"
-              placeholderTextColor={COLORS.text.secondary}
-              value={dueDate.toLocaleTimeString()}
-              onChangeText={(text) => {
-                // Simple time parsing - you can improve this later
-                const [hours, minutes] = text.split(':').map(Number);
-                if (!isNaN(hours) && !isNaN(minutes)) {
-                  const newDate = new Date(dueDate);
-                  newDate.setHours(hours, minutes);
-                  setDueDate(newDate);
-                }
-              }}
-            />
+              onPress={() => setShowTimePicker(true)}
+            >
+              <ThemedText>
+                {dueDate ? dueDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Select Time'}
+              </ThemedText>
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={dueDate}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) => {
+                  setShowDatePicker(false);
+                  if (selectedDate) {
+                    const newDate = new Date(dueDate);
+                    newDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+                    setDueDate(newDate);
+                  }
+                }}
+              />
+            )}
+            {showTimePicker && (
+              <DateTimePicker
+                value={dueDate}
+                mode="time"
+                display="default"
+                onChange={(event, selectedTime) => {
+                  setShowTimePicker(false);
+                  if (selectedTime) {
+                    const newDate = new Date(dueDate);
+                    newDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
+                    setDueDate(newDate);
+                  }
+                }}
+              />
+            )}
           </View>
 
           <View style={styles.buttonContainer}>
