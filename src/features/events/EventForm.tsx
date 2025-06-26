@@ -75,7 +75,7 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
     if (title.trim()) {
       let finalEndDate = endDate;
       if (!finalEndDate || finalEndDate <= startDate) {
-        finalEndDate = new Date(startDate);
+        finalEndDate = new Date(startDate.getTime());
         finalEndDate.setMinutes(finalEndDate.getMinutes() + DEFAULT_EVENT_DURATION_MINUTES);
       }
       // Overlap check
@@ -205,7 +205,7 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
                     const newDate = new Date(startDate);
                     newDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
                     setStartDate(newDate);
-                    const newEndDate = new Date(newDate);
+                    const newEndDate = new Date(newDate.getTime());
                     newEndDate.setMinutes(newEndDate.getMinutes() + DEFAULT_EVENT_DURATION_MINUTES);
                     setEndDate(newEndDate);
                   }
@@ -223,7 +223,7 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
                     const newDate = new Date(startDate);
                     newDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
                     setStartDate(newDate);
-                    const newEndDate = new Date(newDate);
+                    const newEndDate = new Date(newDate.getTime());
                     newEndDate.setMinutes(newEndDate.getMinutes() + DEFAULT_EVENT_DURATION_MINUTES);
                     setEndDate(newEndDate);
                   }
@@ -238,7 +238,7 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
                     onChange={(event, selectedTime) => {
                         setShowEndTimePicker(false)
                         if (selectedTime) {
-                            const newEndDate = new Date(startDate);
+                            const newEndDate = new Date(startDate.getTime());
                             newEndDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
                             setEndDate(newEndDate)
                         }
