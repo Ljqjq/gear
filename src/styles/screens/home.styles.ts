@@ -34,18 +34,16 @@ export const homeStyles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: COLORS.background,
     borderWidth: 1,
-    borderColor: COLORS.primary,
   },
   filterButtonActive: {
-    backgroundColor: COLORS.primary,
+    // backgroundColor: COLORS.primary,
   },
   filterButtonText: {
     textAlign: 'center',
-    color: COLORS.primary,
     fontWeight: '500',
   },
   filterButtonTextActive: {
-    color: COLORS.background,
+    // color: COLORS.background,
   },
   subtitle: {
     fontSize: 16,

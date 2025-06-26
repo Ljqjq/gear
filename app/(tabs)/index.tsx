@@ -35,6 +35,36 @@ export default function HomeScreen() {
     hasDateChanged.current = false;
   }, [selectedDate]);
 
+  const getFilterTypeColor = (type: EventType, isSelected: boolean) => {
+    if (!isSelected) return COLORS.background;
+    switch (type) {
+      case 'job':
+        return COLORS.primary;
+      case 'routine':
+        return COLORS.secondary;
+      case 'free-time':
+        return COLORS.warning;
+      default:
+        return COLORS.background;
+    }
+  };
+
+  const getFilterTextColor = (type: EventType, isSelected: boolean) => {
+    if(!isSelected) {
+        switch (type) {
+            case 'job':
+                return COLORS.primary;
+            case 'routine':
+                return COLORS.secondary;
+            case 'free-time':
+                return COLORS.warning;
+            default:
+                return COLORS.text.primary;
+        }
+    }
+    return COLORS.background
+  };
+
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -185,13 +215,16 @@ export default function HomeScreen() {
               key={type}
               style={[
                 homeStyles.filterButton,
-                selectedTypes.includes(type) && homeStyles.filterButtonActive,
+                { 
+                  backgroundColor: getFilterTypeColor(type, selectedTypes.includes(type)),
+                  borderColor: getFilterTypeColor(type, true)
+                },
               ]}
               onPress={() => toggleEventType(type)}
             >
               <Text style={[
                 homeStyles.filterButtonText,
-                selectedTypes.includes(type) && homeStyles.filterButtonTextActive,
+                { color: getFilterTextColor(type, selectedTypes.includes(type)) },
               ]}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
               </Text>

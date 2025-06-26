@@ -1,11 +1,11 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
 import {
-    Modal,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View
+  Modal,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { ThemedText } from '../../shared/components/ThemedText';
 import { COLORS, FONT_SIZE, SPACING } from '../../shared/constants/theme';
@@ -47,6 +47,19 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
       setDueDate(new Date());
     }
   }, [event]);
+
+  const getTypeColor = (type: EventType) => {
+    switch (type) {
+      case 'job':
+        return COLORS.primary;
+      case 'routine':
+        return COLORS.secondary;
+      case 'free-time':
+        return COLORS.warning;
+      default:
+        return COLORS.text.secondary;
+    }
+  };
 
   const handleSubmit = () => {
     if (title.trim()) {
@@ -101,7 +114,12 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
                   key={eventType}
                   style={[
                     styles.typeButton,
-                    type === eventType && styles.selectedType,
+                    {
+                      backgroundColor:
+                        type === eventType
+                          ? getTypeColor(eventType)
+                          : COLORS.background,
+                    },
                   ]}
                   onPress={() => setType(eventType)}
                 >
@@ -251,9 +269,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     marginHorizontal: SPACING.xs,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.divider,
   },
   selectedType: {
-    backgroundColor: COLORS.primary,
+    // backgroundColor: COLORS.primary,
   },
   typeButtonText: {
     fontSize: FONT_SIZE.sm,
