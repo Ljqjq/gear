@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { ThemedText } from '../../shared/components/ThemedText';
 import { COLORS, FONT_SIZE, SPACING } from '../../shared/constants/theme';
+import { useAppSelector } from '../../store/hooks';
 import { Event, EventType } from './Event';
 
 interface EventFormProps {
@@ -19,32 +20,41 @@ interface EventFormProps {
     title: string;
     description: string;
     type: EventType;
-    dueDate: Date;
+    startDate: Date;
+    endDate: Date;
     completed: boolean;
   }) => void;
   onDelete?: (id: string) => void;
   event?: Event;
 }
 
+const DEFAULT_EVENT_DURATION_MINUTES = 60;
+
 export function EventForm({ visible, onClose, onSubmit, onDelete, event }: EventFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<EventType>('job');
-  const [dueDate, setDueDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState<Date | undefined>();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+  const events = useAppSelector((state) => state.events.events);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (event) {
       setTitle(event.title);
       setDescription(event.description);
       setType(event.type);
-      setDueDate(new Date(event.dueDate));
+      setStartDate(new Date(event.startDate));
+      setEndDate(event.endDate ? new Date(event.endDate) : undefined);
     } else {
       setTitle('');
       setDescription('');
       setType('job');
-      setDueDate(new Date());
+      setStartDate(new Date());
+      setEndDate(undefined);
     }
   }, [event]);
 
@@ -63,12 +73,32 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
 
   const handleSubmit = () => {
     if (title.trim()) {
+      let finalEndDate = endDate;
+      if (!finalEndDate || finalEndDate <= startDate) {
+        finalEndDate = new Date(startDate);
+        finalEndDate.setMinutes(finalEndDate.getMinutes() + DEFAULT_EVENT_DURATION_MINUTES);
+      }
+      // Overlap check
+      const overlappingEvent = events.find(e => {
+        if (event && e.id === event.id) return false; // skip self when editing
+        const eStart = new Date(e.startDate).getTime();
+        const eEnd = new Date(e.endDate).getTime();
+        const newStart = startDate.getTime();
+        const newEnd = finalEndDate.getTime();
+        return newStart < eEnd && newEnd > eStart;
+      });
+      if (overlappingEvent) {
+        setError(`Time conflict with event: "${overlappingEvent.title}" (${new Date(overlappingEvent.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(overlappingEvent.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`);
+        return;
+      }
+      setError(null);
       onSubmit({
         id: event?.id,
         title: title.trim(),
         description: description.trim(),
         type,
-        dueDate,
+        startDate,
+        endDate: finalEndDate,
         completed: event?.completed || false,
       });
       onClose();
@@ -87,6 +117,9 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
           <ThemedText type="title" style={styles.title}>
             {event ? 'Edit Event' : 'New Event'}
           </ThemedText>
+          {error && (
+            <ThemedText style={{ color: COLORS.error, marginBottom: 8 }}>{error}</ThemedText>
+          )}
           
           <TextInput
             style={styles.input}
@@ -142,7 +175,7 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
               onPress={() => setShowDatePicker(true)}
             >
               <ThemedText>
-                {dueDate ? dueDate.toLocaleDateString() : 'Select Date'}
+                {startDate ? startDate.toLocaleDateString() : 'Select Date'}
               </ThemedText>
             </TouchableOpacity>
             <TouchableOpacity
@@ -150,38 +183,67 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
               onPress={() => setShowTimePicker(true)}
             >
               <ThemedText>
-                {dueDate ? dueDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Select Time'}
+                {startDate ? startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Select Time'}
+              </ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.input}
+              onPress={() => setShowEndTimePicker(true)}
+            >
+              <ThemedText>
+                {endDate ? endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'End'}
               </ThemedText>
             </TouchableOpacity>
             {showDatePicker && (
               <DateTimePicker
-                value={dueDate}
+                value={startDate}
                 mode="date"
                 display="default"
                 onChange={(event, selectedDate) => {
                   setShowDatePicker(false);
                   if (selectedDate) {
-                    const newDate = new Date(dueDate);
+                    const newDate = new Date(startDate);
                     newDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
-                    setDueDate(newDate);
+                    setStartDate(newDate);
+                    const newEndDate = new Date(newDate);
+                    newEndDate.setMinutes(newEndDate.getMinutes() + DEFAULT_EVENT_DURATION_MINUTES);
+                    setEndDate(newEndDate);
                   }
                 }}
               />
             )}
             {showTimePicker && (
               <DateTimePicker
-                value={dueDate}
+                value={startDate}
                 mode="time"
                 display="default"
                 onChange={(event, selectedTime) => {
                   setShowTimePicker(false);
                   if (selectedTime) {
-                    const newDate = new Date(dueDate);
+                    const newDate = new Date(startDate);
                     newDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
-                    setDueDate(newDate);
+                    setStartDate(newDate);
+                    const newEndDate = new Date(newDate);
+                    newEndDate.setMinutes(newEndDate.getMinutes() + DEFAULT_EVENT_DURATION_MINUTES);
+                    setEndDate(newEndDate);
                   }
                 }}
               />
+            )}
+            {showEndTimePicker && (
+                <DateTimePicker
+                    value={endDate || new Date()}
+                    mode="time"
+                    display="default"
+                    onChange={(event, selectedTime) => {
+                        setShowEndTimePicker(false)
+                        if (selectedTime) {
+                            const newEndDate = new Date(startDate);
+                            newEndDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
+                            setEndDate(newEndDate)
+                        }
+                    }}
+                />
             )}
           </View>
 
@@ -285,6 +347,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: SPACING.lg,
+    flexWrap: 'wrap'
   },
   buttonContainer: {
     flexDirection: 'row',

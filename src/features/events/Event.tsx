@@ -10,7 +10,8 @@ export interface Event {
   title: string;
   description: string;
   type: EventType;
-  dueDate: string;
+  startDate: string;
+  endDate: string;
   completed: boolean;
 }
 
@@ -34,10 +35,15 @@ export function Event({ event, onPress, onToggle }: EventProps) {
     }
   };
 
-  const dueDate = new Date(event.dueDate);
+  const dueDate = new Date(event.startDate);
   const formattedDate = !isNaN(dueDate.getTime()) 
     ? `${dueDate.toLocaleDateString()} ${dueDate.toLocaleTimeString()}`
-    : 'No due date';
+    : 'No start date';
+
+  const endDate = event.endDate ? new Date(event.endDate) : undefined;
+  const formattedEndDate = endDate && !isNaN(endDate.getTime())
+    ? `${endDate.toLocaleTimeString()}`
+    : '';
 
   return (
     <View style={styles.container}>
@@ -53,7 +59,7 @@ export function Event({ event, onPress, onToggle }: EventProps) {
             {event.description}
           </ThemedText>
           <ThemedText style={styles.dueDate}>
-            Due: {formattedDate}
+            {`Time: ${formattedDate}${formattedEndDate ? ` - ${formattedEndDate}` : ''}`}
           </ThemedText>
         </View>
       </TouchableOpacity>

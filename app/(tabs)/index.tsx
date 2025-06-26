@@ -116,7 +116,8 @@ export default function HomeScreen() {
     title: string;
     description: string;
     type: EventType;
-    dueDate: Date;
+    startDate: Date;
+    endDate: Date;
     completed: boolean;
   }) => {
     if (eventData.id) {
@@ -125,7 +126,8 @@ export default function HomeScreen() {
         title: eventData.title,
         description: eventData.description,
         type: eventData.type,
-        dueDate: eventData.dueDate.toISOString(),
+        startDate: eventData.startDate.toISOString(),
+        endDate: eventData.endDate.toISOString(),
         completed: eventData.completed,
       }));
     } else {
@@ -133,7 +135,8 @@ export default function HomeScreen() {
         title: eventData.title,
         description: eventData.description,
         type: eventData.type,
-        dueDate: eventData.dueDate.toISOString(),
+        startDate: eventData.startDate.toISOString(),
+        endDate: eventData.endDate.toISOString(),
         completed: false,
       }));
     }
@@ -179,7 +182,7 @@ export default function HomeScreen() {
   };
 
   const filteredEvents = events.filter(event => {
-    const eventDate = new Date(event.dueDate);
+    const eventDate = new Date(event.startDate);
     const isSameDay = eventDate.toDateString() === displayDate.toDateString();
     const isSelectedType = selectedTypes.includes(event.type);
     return isSameDay && isSelectedType;

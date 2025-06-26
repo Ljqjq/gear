@@ -6,7 +6,8 @@ export interface Event {
   title: string;
   description: string;
   type: EventType;
-  dueDate: string; // Store as ISO string
+  startDate: string; // Store as ISO string
+  endDate: string; // Store as ISO string
   completed: boolean;
 }
 
