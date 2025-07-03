@@ -28,7 +28,7 @@ jest.mock('react-native', () => ({
     OS: 'ios',
     select: jest.fn((obj) => obj.ios),
   },
-}));
+})); 
 
 jest.mock('@react-native-community/datetimepicker', () => {
   const React = require('react');

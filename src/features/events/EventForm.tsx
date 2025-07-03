@@ -1,11 +1,11 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
 import {
-  Modal,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View
+    Modal,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import { ThemedText } from '../../shared/components/ThemedText';
 import { COLORS, FONT_SIZE, SPACING } from '../../shared/constants/theme';
@@ -241,9 +241,9 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
                             const newEndDate = new Date(startDate.getTime());
                             newEndDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
                             setEndDate(newEndDate)
-                        }
-                    }}
-                />
+                  }
+                }}
+              />
             )}
           </View>
 

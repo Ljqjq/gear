@@ -1,20 +1,32 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Animated,
-    KeyboardAvoidingView,
-    PanResponder,
-    Platform,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View
+  Animated,
+  KeyboardAvoidingView,
+  PanResponder,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { EventComponent as Event, EventForm, EventType } from '../../src/features/events';
 import { COLORS } from '../../src/shared/constants/theme';
 import { useAppDispatch, useAppSelector } from '../../src/store/hooks';
 import { addEvent, deleteEvent, toggleEvent, updateEvent } from '../../src/store/slices/eventSlice';
 import { homeStyles } from '../../src/styles/screens/home.styles';
+
+// Stub components for new views
+const ScheduleView = () => (
+  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <Text>Schedule View (Timeline) coming soon...</Text>
+  </View>
+);
+const SettingsView = () => (
+  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <Text>Settings coming soon...</Text>
+  </View>
+);
 
 export default function HomeScreen() {
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -194,7 +206,7 @@ export default function HomeScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={homeStyles.container}
+      style={[homeStyles.container, { flex: 1, position: 'relative' }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={homeStyles.header}>
