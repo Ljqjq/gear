@@ -1,14 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Animated,
-    KeyboardAvoidingView,
-    PanResponder,
-    Platform,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View
+  Animated,
+  KeyboardAvoidingView,
+  PanResponder,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { EventComponent as Event, EventForm, EventType } from '../../src/features/events';
 import { COLORS } from '../../src/shared/constants/theme';
@@ -272,6 +272,7 @@ export default function HomeScreen() {
         onSubmit={handleAddEvent}
         onDelete={handleDeleteEvent}
         event={selectedEvent}
+        defaultDate={displayDate}
       />
 
       {showDatePicker && (

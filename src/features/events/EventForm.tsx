@@ -1,11 +1,11 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
 import {
-    Modal,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View
+  Modal,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { ThemedText } from '../../shared/components/ThemedText';
 import { COLORS, FONT_SIZE, SPACING } from '../../shared/constants/theme';
@@ -26,16 +26,25 @@ interface EventFormProps {
   }) => void;
   onDelete?: (id: string) => void;
   event?: Event;
+  defaultDate?: Date; // <-- add this
 }
 
 const DEFAULT_EVENT_DURATION_MINUTES = 60;
 
-export function EventForm({ visible, onClose, onSubmit, onDelete, event }: EventFormProps) {
+export function EventForm({ visible, onClose, onSubmit, onDelete, event, defaultDate }: EventFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<EventType>('job');
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState<Date | undefined>();
+  const [startDate, setStartDate] = useState(
+    event ? new Date(event.startDate) : defaultDate ? new Date(defaultDate) : new Date()
+  );
+  const [endDate, setEndDate] = useState<Date | undefined>(
+    event && event.endDate ? new Date(event.endDate) : defaultDate ? (() => {
+      const d = new Date(defaultDate);
+      d.setMinutes(d.getMinutes() + DEFAULT_EVENT_DURATION_MINUTES);
+      return d;
+    })() : undefined
+  );
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
@@ -53,10 +62,14 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event }: Event
       setTitle('');
       setDescription('');
       setType('job');
-      setStartDate(new Date());
-      setEndDate(undefined);
+      setStartDate(defaultDate ? new Date(defaultDate) : new Date());
+      setEndDate(defaultDate ? (() => {
+        const d = new Date(defaultDate);
+        d.setMinutes(d.getMinutes() + DEFAULT_EVENT_DURATION_MINUTES);
+        return d;
+      })() : undefined);
     }
-  }, [event]);
+  }, [event, defaultDate]);
 
   const getTypeColor = (type: EventType) => {
     switch (type) {
