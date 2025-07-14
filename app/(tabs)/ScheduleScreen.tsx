@@ -140,13 +140,43 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 export default function ScheduleScreen() {
   const events = useAppSelector((state) => state.events.events);
   const [expandedEventId, setExpandedEventId] = React.useState<string|null>(null);
-  // Optionally, filter events for today or selected day
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+
+  // Filter events to only those on the selected day
+  const filteredEvents = events.filter(event => {
+    const eventDate = new Date(event.startDate);
+    return (
+      eventDate.getFullYear() === selectedDate.getFullYear() &&
+      eventDate.getMonth() === selectedDate.getMonth() &&
+      eventDate.getDate() === selectedDate.getDate()
+    );
+  });
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+        <TouchableOpacity onPress={() => setSelectedDate(prev => {
+          const d = new Date(prev);
+          d.setDate(d.getDate() - 1);
+          return d;
+        })}>
+          <Ionicons name="chevron-back" size={24} color={COLORS.primary} />
+        </TouchableOpacity>
+        <Text style={{ marginHorizontal: 16, fontSize: 16 }}>
+          {selectedDate.toLocaleDateString()}
+        </Text>
+        <TouchableOpacity onPress={() => setSelectedDate(prev => {
+          const d = new Date(prev);
+          d.setDate(d.getDate() + 1);
+          return d;
+        })}>
+          <Ionicons name="chevron-forward" size={24} color={COLORS.primary} />
+        </TouchableOpacity>
+      </View>
       <View style={styles.scheduleContainer}>
         <TimelineColumn />
         <View style={{ flex: 1, position: 'relative', height: TIMELINE_HEIGHT }}>
-          <EventsColumn events={events} expandedEventId={expandedEventId} setExpandedEventId={setExpandedEventId} />
+          <EventsColumn events={filteredEvents} expandedEventId={expandedEventId} setExpandedEventId={setExpandedEventId} />
         </View>
       </View>
     </ScrollView>
