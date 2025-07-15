@@ -17,16 +17,16 @@ function getMinutesSinceStart(date: Date) {
   return (date.getHours() - TIMELINE_START_HOUR) * 60 + date.getMinutes();
 }
 
-function getTypeColor(type: string) {
+function getTypeColor(type: string, theme: any) {
   switch (type) {
     case 'job':
-      return COLORS.primary;
+      return theme.job;
     case 'routine':
-      return COLORS.secondary;
+      return theme.routine;
     case 'free-time':
-      return COLORS.warning;
+      return theme.freeTime;
     default:
-      return COLORS.text.secondary;
+      return theme.primary;
   }
 }
 
@@ -54,7 +54,7 @@ const TimelineColumn = () => (
   </View>
 );
 
-const EventsColumn = ({ events, expandedEventId, setExpandedEventId }: { events: any[], expandedEventId: string|null, setExpandedEventId: (id: string|null) => void }) => (
+const EventsColumn = ({ events, expandedEventId, setExpandedEventId, theme }: { events: any[], expandedEventId: string|null, setExpandedEventId: (id: string|null) => void, theme: any }) => (
   <View style={styles.eventsColumn}>
     {events.map((event) => {
       const start = new Date(event.startDate);
@@ -63,7 +63,7 @@ const EventsColumn = ({ events, expandedEventId, setExpandedEventId }: { events:
       const endMin = getMinutesSinceStart(end);
       const top = (startMin / 60) * HOUR_HEIGHT + EVENT_MARGIN / 2;
       let height = Math.max(((endMin - startMin) / 60) * HOUR_HEIGHT, EVENT_MIN_HEIGHT) - EVENT_MARGIN;
-      const color = getTypeColor(event.type);
+      const color = getTypeColor(event.type, theme);
       let bgColor = color;
       if (bgColor.startsWith('#')) {
         bgColor = hexToRgba(bgColor, EVENT_BG_OPACITY);
@@ -139,6 +139,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 
 export default function ScheduleScreen() {
   const events = useAppSelector((state) => state.events.events);
+  const theme = useAppSelector((state) => state.settings.theme);
   const [expandedEventId, setExpandedEventId] = React.useState<string|null>(null);
   const [selectedDate, setSelectedDate] = React.useState(new Date());
 
@@ -176,7 +177,7 @@ export default function ScheduleScreen() {
       <View style={styles.scheduleContainer}>
         <TimelineColumn />
         <View style={{ flex: 1, position: 'relative', height: TIMELINE_HEIGHT }}>
-          <EventsColumn events={filteredEvents} expandedEventId={expandedEventId} setExpandedEventId={setExpandedEventId} />
+          <EventsColumn events={filteredEvents} expandedEventId={expandedEventId} setExpandedEventId={setExpandedEventId} theme={theme} />
         </View>
       </View>
     </ScrollView>

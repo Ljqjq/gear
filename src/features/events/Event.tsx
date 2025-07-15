@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '../../shared/components/ThemedText';
 import { COLORS, FONT_SIZE, SPACING } from '../../shared/constants/theme';
+import { useAppSelector } from '../../store/hooks';
 
 export type EventType = 'job' | 'routine' | 'free-time';
 
@@ -22,16 +23,18 @@ interface EventProps {
 }
 
 export function Event({ event, onPress, onToggle }: EventProps) {
-  const getTypeColor = (type: EventType) => {
+  const theme = useAppSelector(state => state.settings.theme);
+
+  const getTypeColor = (type: EventType, theme: any) => {
     switch (type) {
       case 'job':
-        return COLORS.primary;
+        return theme.job;
       case 'routine':
-        return COLORS.secondary;
+        return theme.routine;
       case 'free-time':
-        return COLORS.warning;
+        return theme.freeTime;
       default:
-        return COLORS.text.secondary;
+        return theme.primary;
     }
   };
 
@@ -48,7 +51,7 @@ export function Event({ event, onPress, onToggle }: EventProps) {
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={[styles.contentContainer, { borderLeftColor: getTypeColor(event.type) }]}
+        style={[styles.contentContainer, { borderLeftColor: getTypeColor(event.type, theme) }]}
         onPress={onPress}
       >
         <View style={styles.content}>
@@ -64,11 +67,11 @@ export function Event({ event, onPress, onToggle }: EventProps) {
         </View>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[styles.completionArea, { borderColor: getTypeColor(event.type) }]}
+        style={[styles.completionArea, { borderColor: getTypeColor(event.type, theme) }]}
         onPress={onToggle}
       >
         {event.completed && (
-          <View style={[styles.completedFill, { backgroundColor: getTypeColor(event.type) }]} />
+          <View style={[styles.completedFill, { backgroundColor: getTypeColor(event.type, theme) }]} />
         )}
       </TouchableOpacity>
     </View>

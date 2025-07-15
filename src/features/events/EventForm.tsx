@@ -32,6 +32,7 @@ interface EventFormProps {
 const DEFAULT_EVENT_DURATION_MINUTES = 60;
 
 export function EventForm({ visible, onClose, onSubmit, onDelete, event, defaultDate }: EventFormProps) {
+  const theme = useAppSelector(state => state.settings.theme);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<EventType>('job');
@@ -71,16 +72,16 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event, default
     }
   }, [event, defaultDate]);
 
-  const getTypeColor = (type: EventType) => {
+  const getTypeColor = (type: EventType, theme: any) => {
     switch (type) {
       case 'job':
-        return COLORS.primary;
+        return theme.job;
       case 'routine':
-        return COLORS.secondary;
+        return theme.routine;
       case 'free-time':
-        return COLORS.warning;
+        return theme.freeTime;
       default:
-        return COLORS.text.secondary;
+        return theme.primary;
     }
   };
 
@@ -163,7 +164,7 @@ export function EventForm({ visible, onClose, onSubmit, onDelete, event, default
                     {
                       backgroundColor:
                         type === eventType
-                          ? getTypeColor(eventType)
+                          ? getTypeColor(eventType, theme)
                           : COLORS.background,
                     },
                   ]}
